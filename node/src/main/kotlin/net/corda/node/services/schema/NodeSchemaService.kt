@@ -5,6 +5,11 @@ import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
 import net.corda.core.serialization.SingletonSerializeAsToken
 import net.corda.node.services.api.SchemaService
+import org.hibernate.StatelessSession
+
+interface ExtQueryableState: QueryableState {
+    fun prepareMapping(schema: MappedSchema, session: StatelessSession)
+}
 
 /**
  * Most basic implementation of [SchemaService].
@@ -23,7 +28,10 @@ class NodeSchemaService : SchemaService, SingletonSerializeAsToken() {
     }
 
     // Because schema is always one supported by the state, just delegate.
-    override fun generateMappedObject(state: QueryableState, schema: MappedSchema): PersistentState {
+    override fun generateMappedObject(state: QueryableState, schema: MappedSchema, session: StatelessSession): PersistentState {
+		if (state is ExtQueryableState) {
+			state.prepareMapping(schema, session)
+		}
         return state.generateMappedObject(schema)
     }
 }
