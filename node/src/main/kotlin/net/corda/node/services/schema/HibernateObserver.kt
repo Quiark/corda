@@ -17,9 +17,11 @@ import org.hibernate.cfg.Configuration
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment
 import org.hibernate.service.UnknownUnwrapTypeException
+import org.hibernate.internal.util.config.ConfigurationException
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
+
 
 /**
  * A vault observer that extracts Object Relational Mappings for contract states that support it, and persists them with Hibernate.
@@ -66,6 +68,8 @@ class HibernateObserver(services: ServiceHubInternal) {
             }
         })
         schema.mappedTypes.forEach { config.addAnnotatedClass(it) }
+        try { config.configure() }
+        catch (e: ConfigurationException) { logger.debug("Optional hibernate configuration failed", e) }
         val sessionFactory = config.buildSessionFactory()
         logger.info("Created session factory for schema $schema")
         return sessionFactory
@@ -87,7 +91,7 @@ class HibernateObserver(services: ServiceHubInternal) {
         val sessionFactory = sessionFactoryForSchema(schema)
         val session = sessionFactory.openStatelessSession(TransactionManager.current().connection)
         session.use {
-            val mappedObject = schemaService.generateMappedObject(state, schema)
+            val mappedObject = schemaService.generateMappedObject(state, schema, session)
             mappedObject.stateRef = PersistentStateRef(stateRef)
             session.insert(mappedObject)
         }

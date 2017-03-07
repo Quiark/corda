@@ -3,6 +3,7 @@ package net.corda.node.services.api
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
+import org.hibernate.StatelessSession
 
 //DOCSTART SchemaService
 /**
@@ -29,6 +30,6 @@ interface SchemaService {
      * Map a state to a [PersistentState] for the given schema, either via direct support from the state
      * or via custom logic in this service.
      */
-    fun generateMappedObject(state: QueryableState, schema: MappedSchema): PersistentState
+    fun generateMappedObject(state: QueryableState, schema: MappedSchema, session: StatelessSession): PersistentState
 }
 //DOCEND SchemaService
