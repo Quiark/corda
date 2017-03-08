@@ -81,3 +81,7 @@ docs/virtualenv/
 # bft-smart
 node/bft-smart-config/currentView
 node/config/currentView
+
+# Other
+core/.idea
+.*.swp
