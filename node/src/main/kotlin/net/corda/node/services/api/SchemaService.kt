@@ -3,7 +3,12 @@ package net.corda.node.services.api
 import net.corda.core.schemas.MappedSchema
 import net.corda.core.schemas.PersistentState
 import net.corda.core.schemas.QueryableState
+import net.corda.core.contracts.StateRef
 import org.hibernate.StatelessSession
+
+interface ExtQueryableState: QueryableState {
+    fun persistEx(stateRef: StateRef, schema: MappedSchema, session: StatelessSession)
+}
 
 //DOCSTART SchemaService
 /**
@@ -31,5 +36,8 @@ interface SchemaService {
      * or via custom logic in this service.
      */
     fun generateMappedObject(state: QueryableState, schema: MappedSchema, session: StatelessSession): PersistentState
+
+	// Added
+	fun persistExtState(stateRef: StateRef, state: ExtQueryableState, schema: MappedSchema, session: StatelessSession)
 }
 //DOCEND SchemaService

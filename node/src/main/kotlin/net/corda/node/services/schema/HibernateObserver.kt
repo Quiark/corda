@@ -10,6 +10,7 @@ import net.corda.core.schemas.QueryableState
 import net.corda.core.utilities.debug
 import net.corda.core.utilities.loggerFor
 import net.corda.node.services.api.ServiceHubInternal
+import net.corda.node.services.api.ExtQueryableState
 import org.hibernate.SessionFactory
 import org.hibernate.boot.model.naming.Identifier
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -91,9 +92,13 @@ class HibernateObserver(services: ServiceHubInternal) {
         val sessionFactory = sessionFactoryForSchema(schema)
         val session = sessionFactory.openStatelessSession(TransactionManager.current().connection)
         session.use {
-            val mappedObject = schemaService.generateMappedObject(state, schema, session)
-            mappedObject.stateRef = PersistentStateRef(stateRef)
-            session.insert(mappedObject)
+            if (state is ExtQueryableState) {
+                schemaService.persistExtState(stateRef, state, schema, session)
+            } else {
+                val mappedObject = schemaService.generateMappedObject(state, schema, session)
+                mappedObject.stateRef = PersistentStateRef(stateRef)
+                session.insert(mappedObject)
+            }
         }
     }
 
