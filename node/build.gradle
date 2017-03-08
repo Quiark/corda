@@ -4,7 +4,6 @@ apply plugin: 'net.corda.plugins.quasar-utils'
 apply plugin: 'net.corda.plugins.publish-utils'
 
 description 'Corda node modules'
-version = '0.8.2.a'
 
 repositories {
     mavenLocal()
