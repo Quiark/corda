@@ -45,6 +45,7 @@ interface ServiceHub : ServicesForResolution {
     val schedulerService: SchedulerService
     val clock: Clock
     val myInfo: NodeInfo
+    val uniquenessService :UniquenessProvider?
 
     /**
      * Given a [SignedTransaction], writes it to the local storage for validated transactions and then

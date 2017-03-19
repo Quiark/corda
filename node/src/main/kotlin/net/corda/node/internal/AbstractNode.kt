@@ -115,6 +115,7 @@ abstract class AbstractNode(open val configuration: NodeConfiguration,
         override val clock: Clock = platformClock
         override val myInfo: NodeInfo get() = info
         override val schemaService: SchemaService get() = schemas
+        override val uniquenessService :UniquenessProvider? get() = _uniquenessService
 
         // Internal only
         override val monitoringService: MonitoringService = MonitoringService(MetricRegistry())
@@ -161,6 +162,7 @@ abstract class AbstractNode(open val configuration: NodeConfiguration,
     protected val runOnStop: ArrayList<Runnable> = ArrayList()
     lateinit var database: Database
     protected var dbCloser: Runnable? = null
+    var _uniquenessService :UniquenessProvider? = null
 
     /** Locates and returns a service of the given type if loaded, or throws an exception if not found. */
     inline fun <reified T : Any> findService() = customServices.filterIsInstance<T>().single()
@@ -434,6 +436,7 @@ abstract class AbstractNode(open val configuration: NodeConfiguration,
     open protected fun makeNotaryService(type: ServiceType, tokenizableServices: MutableList<Any>): NotaryService {
         val timestampChecker = TimestampChecker(platformClock, 30.seconds)
         val uniquenessProvider = makeUniquenessProvider(type)
+        _uniquenessService = uniquenessProvider
         tokenizableServices.add(uniquenessProvider)
 
         return when (type) {

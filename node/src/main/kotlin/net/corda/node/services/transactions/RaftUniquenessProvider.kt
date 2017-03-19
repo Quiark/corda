@@ -14,6 +14,7 @@ import io.atomix.copycat.server.storage.StorageLevel
 import net.corda.core.contracts.StateRef
 import net.corda.core.crypto.Party
 import net.corda.core.crypto.SecureHash
+import net.corda.core.getOrThrow
 import net.corda.core.node.services.UniquenessException
 import net.corda.core.node.services.UniquenessProvider
 import net.corda.core.serialization.SingletonSerializeAsToken
@@ -50,12 +51,16 @@ class RaftUniquenessProvider(storagePath: Path, myAddress: HostAndPort, clusterA
     }
 
     private val _clientFuture: CompletableFuture<CopycatClient>
+    private val _serverFuture: CompletableFuture<CopycatServer>
     /**
      * Copycat clients are responsible for connecting to the cluster and submitting commands and queries that operate
      * on the cluster's replicated state machine.
      */
     private val client: CopycatClient
         get() = _clientFuture.get()
+
+    private val server: CopycatServer
+        get() = _serverFuture.get()
 
     init {
         log.info("Creating Copycat server, log stored in: ${storagePath.toFile()}")
@@ -80,6 +85,7 @@ class RaftUniquenessProvider(storagePath: Path, myAddress: HostAndPort, clusterA
             log.info("Bootstrapping a Copycat cluster at $address")
             server.bootstrap()
         }
+        _serverFuture = serverFuture
 
         val client = CopycatClient.builder(address)
                 .withTransport(transport) // TODO: use local transport for client-server communications
@@ -105,6 +111,11 @@ class RaftUniquenessProvider(storagePath: Path, myAddress: HostAndPort, clusterA
                 .withTrustStorePath(config.trustStoreFile.toString())
                 .withTrustStorePassword(config.trustStorePassword)
                 .build()
+    }
+
+    fun leaveCluster() {
+        // server leaves cluster
+        server.leave().getOrThrow()
     }
 
     override fun commit(states: List<StateRef>, txId: SecureHash, callerIdentity: Party) {

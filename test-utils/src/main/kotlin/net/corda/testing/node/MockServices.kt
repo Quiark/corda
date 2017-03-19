@@ -62,6 +62,8 @@ open class MockServices(val key: KeyPair = generateKeyPair()) : ServiceHub {
     override val clock: Clock get() = Clock.systemUTC()
     override val schedulerService: SchedulerService get() = throw UnsupportedOperationException()
     override val myInfo: NodeInfo get() = NodeInfo(object : SingleMessageRecipient {}, Party("MegaCorp", key.public.composite))
+    override val uniquenessService: UniquenessProvider?
+        get() = throw UnsupportedOperationException()
 }
 
 @ThreadSafe
