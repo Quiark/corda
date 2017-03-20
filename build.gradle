@@ -4,7 +4,7 @@ buildscript {
     file("publish.properties").withInputStream { props.load(it) }
 
     // Our version: bump this on release.
-    ext.corda_version = "0.9.1.a"
+    ext.corda_version = "0.9.1.b"
     ext.gradle_plugins_version = props.getProperty("gradlePluginsVersion")
 
     // Dependency versions. Can run 'gradle dependencyUpdates' to find new versions of things.
@@ -28,7 +28,7 @@ buildscript {
     ext.junit_version = '4.12'
     ext.jopt_simple_version = '5.0.2'
     ext.jansi_version = '1.14'
-    ext.hibernate_version = '5.2.6.Final'
+    ext.hibernate_version = '5.0.11.Final'
     ext.rxjava_version = '1.2.4'
     ext.requery_version = '1.1.1'
     ext.dokka_version = '0.9.13'
