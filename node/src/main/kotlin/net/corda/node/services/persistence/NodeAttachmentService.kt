@@ -14,6 +14,7 @@ import net.corda.core.utilities.loggerFor
 import net.corda.node.services.api.AcceptsFileUpload
 import java.io.FilterInputStream
 import java.io.InputStream
+import java.io.BufferedInputStream
 import java.nio.file.*
 import java.util.*
 import java.util.jar.JarInputStream
@@ -88,7 +89,8 @@ class NodeAttachmentService(val storePath: Path, metrics: MetricRegistry) : Atta
             // This is just an optional safety check. If it slows things down too much it can be disabled.
             if (id is SecureHash.SHA256 && checkOnLoad)
                 stream = HashCheckingStream(id, path, stream)
-            return stream
+            // RPC cant serialize any other class
+            return BufferedInputStream(stream)
         }
 
         override fun equals(other: Any?) = other is Attachment && other.id == id
