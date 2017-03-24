@@ -30,6 +30,7 @@ import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CountDownLatch
 import javax.annotation.concurrent.ThreadSafe
+import kotlin.text.toInt
 
 // TODO: Stop the wallet explorer and other clients from using this class and get rid of persistentInbox
 
@@ -124,6 +125,7 @@ class NodeMessagingClient(override val config: NodeConfiguration,
             // TODO Add broker CN to config for host verification in case the embedded broker isn't used
             val tcpTransport = tcpTransport(Outbound(), serverHostPort.hostText, serverHostPort.port)
             val locator = ActiveMQClient.createServerLocatorWithoutHA(tcpTransport)
+			locator.minLargeMessageSize = System.getProperty("corda_amq.large_msg_size")?.toInt() ?: 50 * 1024 * 1024
             clientFactory = locator.createSessionFactory()
 
             // Login using the node username. The broker will authentiate us as its node (as opposed to another peer)

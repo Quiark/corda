@@ -75,11 +75,14 @@ class NodeAttachmentStorageTest {
         }
         assertEquals(e.file, storage.storePath / id.toString())
 
+        /*
+        // no longer true because BufferedInputStream is used and it apparently reads ahead:
         // But if we skip around and read a single entry, no exception is thrown.
         storage.openAttachment(id)!!.openAsJAR().use {
             it.nextJarEntry
             it.readBytes()
         }
+        */
     }
 
     private var counter = 0
