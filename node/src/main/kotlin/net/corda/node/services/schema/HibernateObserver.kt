@@ -70,7 +70,7 @@ class HibernateObserver(services: ServiceHubInternal) {
         })
         schema.mappedTypes.forEach { config.addAnnotatedClass(it) }
         try { config.configure() }
-        catch (e: ConfigurationException) { logger.debug("Optional hibernate configuration failed", e) }
+        catch (e: ConfigurationException) { logger.trace("Optional hibernate configuration failed", e) }
         val sessionFactory = config.buildSessionFactory()
         logger.info("Created session factory for schema $schema")
         return sessionFactory
