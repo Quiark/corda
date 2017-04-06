@@ -10,6 +10,7 @@ import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import net.corda.core.transactions.SignedTransaction
 import net.corda.core.transactions.WireTransaction
+import net.corda.core.node.ServiceHub
 import java.util.*
 
 // TODO: This code is currently unit tested by TwoPartyTradeFlowTests, it should have its own tests.
@@ -30,7 +31,8 @@ import java.util.*
  * The flow returns a list of verified [LedgerTransaction] objects, in a depth-first order.
  */
 class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
-                              private val otherSide: Party) : FlowLogic<List<LedgerTransaction>>() {
+                              private val otherSide: Party,
+                              val verifyCallback: ServiceHub.(LedgerTransaction) -> Unit = {}) : FlowLogic<List<LedgerTransaction>>() {
 
     companion object {
         private fun dependencyIDs(wtx: WireTransaction) = wtx.inputs.map { it.txhash }.toSet()
@@ -108,6 +110,7 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
             // Resolve to a LedgerTransaction and then run all contracts.
             val ltx = stx.toLedgerTransaction(serviceHub)
             ltx.verify()
+            serviceHub.verifyCallback(ltx)
             serviceHub.recordTransactions(stx)
             result += ltx
         }
@@ -123,6 +126,7 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
             fetchMissingAttachments(listOf(it))
             val ltx = it.toLedgerTransaction(serviceHub)
             ltx.verify()
+            serviceHub.verifyCallback(ltx)
             result += ltx
         }
 
