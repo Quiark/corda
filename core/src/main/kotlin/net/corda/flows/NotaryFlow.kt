@@ -158,8 +158,8 @@ object NotaryFlow {
     }
 }
 
-class NotaryException(val error: NotaryError) : FlowException() {
-    override fun toString() = "${super.toString()}: Error response from Notary - $error"
+class NotaryException(val error: NotaryError) : FlowException(error.toString()) {
+    override fun toString() = "${super.toString()}: Error response from Notary"
 }
 
 @CordaSerializable
@@ -171,8 +171,13 @@ sealed class NotaryError {
     /** Thrown if the time specified in the timestamp command is outside the allowed tolerance */
     class TimestampInvalid : NotaryError()
 
-    class TransactionInvalid(val msg: String) : NotaryError()
-    class SignaturesInvalid(val msg: String) : NotaryError()
+    class TransactionInvalid(val msg: String) : NotaryError() {
+		override fun toString() = msg
+	}
+
+    class SignaturesInvalid(val msg: String) : NotaryError() {
+		override fun toString() = msg
+	}
 
     class SignaturesMissing(val cause: SignedTransaction.SignaturesMissingException) : NotaryError() {
         override fun toString() = cause.toString()
