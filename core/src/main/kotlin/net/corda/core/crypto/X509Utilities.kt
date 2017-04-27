@@ -84,8 +84,7 @@ object X509Utilities {
      * @return A data class is returned containing the new root CA Cert and its [KeyPair] for signing downstream certificates.
      * Note the generated certificate tree is capped at max depth of 2 to be in line with commercially available certificates
      */
-    fun createSelfSignedCACert(subject: X500Name, signatureScheme: SignatureScheme = DEFAULT_TLS_SIGNATURE_SCHEME, validityWindow: Pair<Int, Int> = DEFAULT_VALIDITY_WINDOW): CertificateAndKey {
-        val keyPair = generateKeyPair(signatureScheme)
+    fun createSelfSignedCACert(subject: X500Name, signatureScheme: SignatureScheme = DEFAULT_TLS_SIGNATURE_SCHEME, keyPair: KeyPair = generateKeyPair(signatureScheme), validityWindow: Pair<Int, Int> = DEFAULT_VALIDITY_WINDOW): CertificateAndKey {
         val window = getCertificateValidityWindow(validityWindow.first, validityWindow.second)
         val cert = Crypto.createCertificate(subject, keyPair, subject, keyPair.public, CA_KEY_USAGE, CA_KEY_PURPOSES, signatureScheme, window, pathLength = 2)
         return CertificateAndKey(cert, keyPair)
