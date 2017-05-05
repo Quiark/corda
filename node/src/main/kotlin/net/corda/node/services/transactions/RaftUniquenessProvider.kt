@@ -8,6 +8,7 @@ import io.atomix.catalyst.transport.netty.NettyTransport
 import io.atomix.catalyst.transport.netty.SslProtocol
 import io.atomix.copycat.client.ConnectionStrategies
 import io.atomix.copycat.client.CopycatClient
+import io.atomix.copycat.client.RecoveryStrategies
 import io.atomix.copycat.server.CopycatServer
 import io.atomix.copycat.server.storage.Storage
 import io.atomix.copycat.server.storage.StorageLevel
@@ -91,6 +92,7 @@ class RaftUniquenessProvider(storagePath: Path, myAddress: HostAndPort, clusterA
                 .withTransport(transport) // TODO: use local transport for client-server communications
                 .withConnectionStrategy(ConnectionStrategies.EXPONENTIAL_BACKOFF)
                 .withSerializer(serializer)
+                .withRecoveryStrategy(RecoveryStrategies.RECOVER)
                 .build()
         _clientFuture = serverFuture.thenCompose { client.connect(address) }
     }
