@@ -42,6 +42,13 @@ class CompositeKey private constructor (val threshold: Int,
             }
             else return weight.compareTo(other.weight)
         }
+
+        override fun toString(): String {
+            if (node is CompositeKey)
+                return "[${weight}-(${node})]"
+            else
+                return "[${weight}-${node.toBase58String()}]"
+        }
     }
 
     companion object {

@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Futures
 import joptsimple.OptionParser
 import net.corda.client.rpc.CordaRPCClient
 import net.corda.client.rpc.notUsed
+import net.corda.core.crypto.toBase58String
 import net.corda.core.crypto.toStringShort
 import net.corda.core.div
 import net.corda.core.getOrThrow
@@ -59,7 +60,7 @@ private class NotaryDemoClientApi(val rpc: CordaRPCOps) {
             "Tx [${tx.tx.id.prefixChars()}..] signed by $signer"
         }.joinToString("\n")
 
-        println("Notary: \"${notary.name}\", with composite key: ${notary.owningKey}\n" +
+        println("Notary: \"${notary.name}\", with composite key: ${notary.owningKey.toBase58String()}\n" +
                 "Notarised ${transactions.size} transactions:\n" + transactionSigners)
     }
 
