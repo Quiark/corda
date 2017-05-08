@@ -491,6 +491,10 @@ object Crypto {
      * Check if a point's coordinates are on the expected curve to avoid certain types of ECC attacks.
      * Point-at-infinity is not permitted as well.
      * @see <a href="https://safecurves.cr.yp.to/twist.html">Small subgroup and invalid-curve attacks</a> for a more descriptive explanation on such attacks.
+     * We use this function on [findSignatureScheme] for a [PublicKey]; currently used for signature verification only.
+     * Thus, as these attacks are mostly not relevant to signature verification, we should note that
+     * we're doing it out of an abundance of caution and specifically to proactively protect developers
+     * against using these points as part of a DH key agreement or for use cases as yet unimagined.
      * This method currently applies to BouncyCastle's ECDSA (both R1 and K1 curves) and I2P's EdDSA (ed25519 curve).
      * @param publicKey a [PublicKey], usually used to validate a signer's public key in on the Curve.
      * @param signatureScheme a [SignatureScheme] object, retrieved from supported signature schemes, see [Crypto].
